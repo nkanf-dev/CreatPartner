@@ -1,0 +1,18 @@
+[project]
+name = "creatpartner"
+version = "0.1.0"
+description = "AI-powered research assistant for creative competition projects"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic-ai",
+    "httpx",
+    "jina",
+    "arxiv",
+    "streamlit",
+    "python-dotenv",
+    "pymongo",
+    "sentence-transformers",
+    "motor",  # 异步MongoDB驱动
+    "numpy"
+]
