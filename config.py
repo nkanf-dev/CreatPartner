@@ -1,8 +1,3 @@
-"""
-CreatPartner 配置文件
-集中管理所有配置项，支持自定义LLM服务提供商
-"""
-
 import os
 from dataclasses import dataclass
 from typing import Optional, Literal
@@ -15,18 +10,22 @@ load_dotenv()
 @dataclass
 class LLMConfig:
     """LLM配置"""
-    # 基础配置
-    provider: str = "siliconflow"  # 默认使用硅基流动
-    model_name: str = "deepseek-ai/DeepSeek-V2.5"
+
+    provider: str = "siliconflow"
+    model_name: str = "Qwen/Qwen3-30B-A3B-Instruct-2507"
     api_key: Optional[str] = None
     base_url: Optional[str] = None
-    
-    # 请求配置
-    max_retries: int = 3
-    timeout: float = 60.0
-    temperature: float = 0.7
-    max_tokens: Optional[int] = None
-    
+
+    max_retries: int = 1  # 最少重试次数
+    timeout: float = 90  # 请求超时时间
+    temperature: float = 0.3  # 生成温度
+    max_tokens: Optional[int] = 8000  # 最大token数量
+
+    max_prompt_length: int = 15000  # 最大prompt长度
+    max_content_length: int = 3000  # 单个内容最大长度
+    max_search_results: int = 3  # 默认搜索结果数量
+    chunk_size: int = 1000  # 文本分块大小
+
     def __post_init__(self):
         """初始化后处理"""
         # 根据提供商设置默认值
@@ -44,9 +43,10 @@ class LLMConfig:
 @dataclass
 class DatabaseConfig:
     """数据库配置"""
+
     mongodb_uri: str = "mongodb://localhost:27017"
     database_name: str = "creatpartner"
-    
+
     def __post_init__(self):
         """初始化后处理"""
         self.mongodb_uri = os.getenv("MONGODB_URI", self.mongodb_uri)
@@ -56,11 +56,12 @@ class DatabaseConfig:
 @dataclass
 class EmbeddingConfig:
     """嵌入服务配置"""
+
     provider: str = "jina"
     api_key: Optional[str] = None
     model: str = "jina-embeddings-v3"
     dimensions: int = 1024
-    
+
     def __post_init__(self):
         """初始化后处理"""
         if self.provider == "jina":
@@ -70,49 +71,82 @@ class EmbeddingConfig:
 @dataclass
 class SearchConfig:
     """搜索配置"""
-    max_results: int = 5
-    enable_deep_search: bool = False
-    enable_content_extraction: bool = True
-    enable_reranker: bool = True
-    
+
+    max_results: int = 3  # 合理的搜索结果数量
+    enable_content_extraction: bool = True  # 启用内容提取
+    enable_reranker: bool = False  # 默认禁用重排序
+    request_timeout: float = 30.0  # 增加搜索请求超时时间
+    concurrent_requests: int = 3  # 合理的并发请求数量
+
     def __post_init__(self):
         """初始化后处理"""
         self.max_results = int(os.getenv("MAX_SEARCH_RESULTS", self.max_results))
-        self.enable_deep_search = os.getenv("ENABLE_DEEP_SEARCH", "false").lower() == "true"
+        self.request_timeout = float(os.getenv("SEARCH_TIMEOUT", self.request_timeout))
+
+
+@dataclass
+class PerformanceConfig:
+    """性能配置"""
+
+    enable_caching: bool = True  # 启用缓存
+    cache_ttl: int = 300  # 缓存过期时间（秒）
+    enable_performance_logging: bool = True  # 启用性能日志
+    log_slow_operations: bool = True  # 记录慢操作
+    slow_operation_threshold: float = 2.0  # 慢操作阈值（秒）
+
+    # 并发配置
+    max_concurrent_requests: int = 3  # 最大并发请求数
+    request_pool_size: int = 10  # 请求池大小
+
+    def __post_init__(self):
+        """初始化后处理"""
+        self.enable_caching = os.getenv("ENABLE_CACHING", "true").lower() == "true"
+        self.cache_ttl = int(os.getenv("CACHE_TTL", self.cache_ttl))
+        self.enable_performance_logging = (
+            os.getenv("ENABLE_PERF_LOG", "true").lower() == "true"
+        )
 
 
 @dataclass
 class ProjectConfig:
     """项目配置"""
+
     default_project_name: str = "未命名项目"
-    default_project_stage: Literal["planning", "research", "development", "testing", "deployment"] = "planning"
+    default_project_stage: Literal[
+        "planning", "research", "development", "testing", "deployment"
+    ] = "planning"
     default_project_description: str = ""
-    
-    # 使用限制
-    max_requests_per_session: int = 20
-    max_tokens_per_session: int = 10000
-    max_tool_calls_per_session: int = 10
+
+    # 使用限制 - 已移除所有限制
+    max_requests_per_session: int = 9999  # 无限制
+    max_tokens_per_session: int = 999999  # 无限制
+    max_tool_calls_per_session: int = 9999  # 无限制
+
+    # debug模式
+    debug_mode: bool = True
 
 
 @dataclass
 class AppConfig:
     """应用配置"""
+
     # 基础配置
     app_name: str = "CreatPartner"
     app_version: str = "1.0.0"
-    debug: bool = False
-    
+    debug: bool = True
+
     # 组件配置
     llm: LLMConfig = None
     database: DatabaseConfig = None
     embedding: EmbeddingConfig = None
     search: SearchConfig = None
     project: ProjectConfig = None
-    
+    performance: PerformanceConfig = None
+
     def __post_init__(self):
         """初始化后处理"""
         self.debug = os.getenv("DEBUG", "false").lower() == "true"
-        
+
         # 初始化子配置
         if self.llm is None:
             self.llm = LLMConfig()
@@ -124,6 +158,11 @@ class AppConfig:
             self.search = SearchConfig()
         if self.project is None:
             self.project = ProjectConfig()
+        if self.performance is None:
+            self.performance = PerformanceConfig()
+
+        # 设置debug模式
+        self.project.debug_mode = self.debug
 
 
 # 全局配置实例
@@ -147,17 +186,17 @@ def create_llm_provider():
     try:
         from pydantic_ai.providers.openai import OpenAIProvider
         from openai import AsyncOpenAI
-        
+
         # 创建自定义客户端
         client = AsyncOpenAI(
             api_key=config.llm.api_key,
             base_url=config.llm.base_url,
             max_retries=config.llm.max_retries,
-            timeout=config.llm.timeout
+            timeout=config.llm.timeout,
         )
-        
+
         return OpenAIProvider(openai_client=client)
-        
+
     except ImportError:
         print("警告: 缺少依赖包，返回默认提供商")
         return None
@@ -166,24 +205,24 @@ def create_llm_provider():
 def validate_config() -> bool:
     """验证配置的有效性"""
     errors = []
-    
+
     # 检查必需的API密钥
     if not config.llm.api_key:
         errors.append(f"缺少{config.llm.provider.upper()}_API_KEY环境变量")
-    
+
     if config.embedding.provider == "jina" and not config.embedding.api_key:
         errors.append("缺少JINA_API_KEY环境变量")
-    
+
     # 检查数据库连接
     if not config.database.mongodb_uri:
         errors.append("缺少MongoDB连接配置")
-    
+
     if errors:
         print("配置验证失败:")
         for error in errors:
             print(f"  - {error}")
         return False
-    
+
     return True
 
 

@@ -1,332 +1,446 @@
-# CreatPartner - AI驱动的创新竞赛助手
+# 🚀 CreatPartner
 
-基于 Pydantic AI 多代理架构开发的智能研究助手，专为大学生创新创业竞赛提供全方位的信息检索、知识管理和项目分析支持。
+> AI驱动的创新创业项目助手 | AI-Powered Innovation & Entrepreneurship Assistant
 
-## 🎯 核心功能
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit](https://img.shields.io/badge/framework-Streamlit-red.svg)](https://streamlit.io/)
+[![MongoDB](https://img.shields.io/badge/database-MongoDB-green.svg)](https://mongodb.com/)
 
-### 多代理架构设计
+CreatPartner是一个专为创新创业项目设计的AI助手系统，特别针对参与创新创业竞赛的学生团队，提供智能的资料检索、项目规划、知识管理和决策支持。
 
-基于Pydantic AI最佳实践，采用**智能体委托**和**程序化智能体交接**模式：
+## ✨ 核心特性
 
-#### 1. 研究协调器 (ResearchCoordinator)
-- **智能体委托**: 自动选择合适的子代理处理任务
-- **搜索代理委托**: 委托网络和学术搜索任务
-- **知识代理委托**: 委托知识存储和查询任务
-- **工作流协调**: 确保信息在不同代理间正确传递
+### 🤖 三Agent协作架构
+- **主助手Agent** - 直接与用户交流，协调其他Agent
+- **搜索Agent** - 自动进行外部资料检索（网络搜索 + ArXiv学术搜索）
+- **知识Agent** - 管理项目长期记忆和知识库
 
-#### 2. 用户交互代理 (InteractionAgent)
-- **主要接口**: 用户的直接交互界面
-- **需求理解**: 分析和澄清用户需求
-- **策略制定**: 自动选择最佳的研究和分析策略
-- **结果整合**: 汇总多个代理的输出并提供统一回答
+### 🧠 双知识库系统
+- **项目长期记忆库** - 存储项目发展历程、团队讨论、决策记录
+- **外部资料库** - 整理从互联网和学术文献中检索的相关资料
 
-#### 3. 搜索代理 (SearchAgent)
-- **Web搜索**: 基于Jina API的网络信息检索
-- **学术搜索**: 基于Arxiv的论文检索
-- **智能分析**: AI驱动的搜索结果分析和总结
+### 🔍 智能检索能力
+- **网络搜索** - 实时获取最新的行业动态和技术趋势
+- **学术检索** - 从ArXiv等学术数据库获取前沿研究论文
+- **语义搜索** - 基于Jina AI的向量检索和重排序技术
 
-#### 4. 知识库代理 (KnowledgeAgent)
-- **项目长期记忆**: 存储项目历史、决策、经验教训
-- **外部检索资料**: 整理和归档从外部获取的研究资料
-- **向量搜索**: 基于MongoDB Atlas Vector Search和Jina AI的语义检索
-- **智能分割**: 使用Jina Segmenter自动分割长文档
-- **重排序优化**: 使用Jina Reranker提升搜索相关性
+### 📋 项目管理功能
+- **项目生命周期管理** - 从规划到部署的全阶段支持
+- **任务智能分解** - 自动将复杂目标分解为可执行任务
+- **进度跟踪** - 实时监控项目进展和里程碑
 
-### 程序化智能体交接工作流
+## 🛠️ 技术架构
 
+### 核心技术栈
+- **AI框架**: [Pydantic AI](https://ai.pydantic.org.cn/agents/) - 现代化的Python AI Agent框架
+- **前端界面**: [Streamlit](https://streamlit.io/) - 快速构建AI应用界面
+- **数据库**: [MongoDB](https://www.mongodb.com/) - 文档数据库存储项目数据
+- **向量检索**: [Jina AI](https://docs.jina.ai/) - 嵌入向量生成和重排序
+- **包管理**: [uv](https://docs.astral.sh/uv/) - 快速Python包管理器
+
+### 系统架构图
+```mermaid
+graph TD
+    A[用户界面 Streamlit] --> B[主助手 Agent]
+    B --> C[搜索 Agent]
+    B --> D[知识 Agent]
+    
+    C --> E[网络搜索 API]
+    C --> F[ArXiv API]
+    
+    D --> G[项目记忆库]
+    D --> H[外部资料库]
+    
+    G --> I[MongoDB + Jina Embedding]
+    H --> I
+    
+    B --> J[项目管理]
+    B --> K[任务规划]
+    B --> L[决策支持]
 ```
-用户查询 → 知识库检查 → 外部搜索(如需) → 信息整合 → 智能回答
-     ↓            ↓            ↓           ↓         ↓
-用户交互代理 → 知识代理 → 搜索代理 → 研究协调器 → 用户交互代理
-```
 
-### 两个知识库
+## 🚀 快速开始
 
-#### 项目长期记忆知识库
-- 项目决策记录
-- 开发进展跟踪
-- 经验教训总结
-- 团队协作记录
+### 环境要求
+- Python 3.10+
+- MongoDB 4.4+
+- 8GB+ RAM (推荐)
 
-#### 外部检索资料知识库
-- Web搜索结果
-- 学术论文资料
-- 行业报告分析
-- 竞品调研信息
-
-## 🚀 技术栈
-
-- **Agent框架**: Pydantic AI (多代理架构)
-- **向量数据库**: MongoDB Atlas Vector Search
-- **AI服务**: Jina AI (嵌入、重排序、分割)
-  - Jina Embeddings v3 (1024维向量)
-  - Jina Reranker v2 (多语言重排序)
-  - Jina Segmenter (智能文本分割)
-- **网络搜索**: Jina Search API
-- **学术搜索**: Arxiv API
-- **Web界面**: Streamlit
-- **HTTP客户端**: httpx
-- **环境管理**: python-dotenv
-
-## 📦 快速开始
-
-### 1. 系统要求
-
-- Python 3.12+
-- MongoDB (本地或Atlas云服务)
-- OpenAI API Key
-
-### 2. 安装
-
+### 1. 安装项目
 ```bash
 # 克隆项目
-git clone <repository-url>
+git clone https://github.com/nkanf-dev/CreatPartner.git
 cd CreatPartner
 
-# 运行自动安装脚本
-python install.py
+# 安装依赖（使用uv，更快的包管理器）
+pip install uv
+uv sync
 ```
 
-### 3. 配置环境
-
-编辑 `.env` 文件，添加必要的配置：
-
+### 2. 配置环境
 ```bash
-# 必需配置
-OPENAI_API_KEY=your_openai_api_key_here
+# 复制环境配置文件
+cp .env.example .env
+
+# 编辑配置文件
+nano .env
+```
+
+**必需配置项**:
+```bash
+# LLM API密钥 (选择其中一个)
+SILICONFLOW_API_KEY=your_api_key
+# OPENAI_API_KEY=your_openai_key
+# DEEPSEEK_API_KEY=your_deepseek_key
+
+# MongoDB连接
 MONGODB_URI=mongodb://localhost:27017
-
-# 可选配置
-JINA_API_KEY=your_jina_api_key_here
-DEFAULT_MODEL=openai:gpt-4o
 DB_NAME=creatpartner
-MAX_SEARCH_RESULTS=5
+
+# Jina AI API密钥
+JINA_API_KEY=your_jina_api_key
 ```
 
-### 4. 启动系统
+### 3. 启动服务
 
+#### 启动MongoDB
 ```bash
-# 基础演示
-python main.py
+# 方式1: 直接启动 (如果已安装MongoDB)
+mongod
 
-# 完整异步演示
-python main.py --async
-
-# Streamlit Web界面 (开发中)
-streamlit run app.py
+# 方式2: 使用Docker
+docker run -d -p 27017:27017 --name mongodb mongo:latest
 ```
 
-## 💻 使用示例
+#### 启动应用
+```bash
+# 启动Streamlit应用
+uv run streamlit run app.py
 
-### 基础搜索
-
-```python
-from search_agent import SearchAgent, SearchDependencies
-
-# 创建搜索代理
-agent = SearchAgent()
-deps = SearchDependencies(max_results=5)
-
-# 执行搜索
-result = agent.search_sync("AI在教育中的应用", deps)
-print(result)
+# 或指定端口
+uv run streamlit run app.py --server.port 8501
 ```
 
-### 知识库管理
+### 4. 访问应用
+打开浏览器访问：`http://localhost:8501`
 
-```python
-from knowledge_agent import KnowledgeAgent, KnowledgeDependencies
+## 📖 使用指南
 
-# 创建知识库代理
-agent = KnowledgeAgent()
-deps = KnowledgeDependencies(
-    mongodb_uri="mongodb://localhost:27017",
-    database_name="my_project"
-)
+### 基本用法
 
-# 添加项目记忆
-await agent.manage_project_memory(
-    "add",
-    "确定使用React + Node.js技术栈",
-    deps
-)
+1. **项目初始化**
+   - 在侧边栏设置项目名称和描述
+   - 选择项目当前阶段（规划/调研/开发/测试/部署/比赛）
 
-# 处理外部资料
-external_data = [
-    {"title": "React最佳实践", "content": "...", "source": "web"}
-]
-await agent.process_external_data(external_data, deps)
+2. **智能对话**
+   - 在对话框中输入你的问题或需求
+   - AI助手会自动判断需要执行的操作：
+     - 🔍 搜索外部资料
+     - 📚 查询知识库
+     - 📋 制定计划
+     - 📊 分析数据
+
+3. **项目管理**
+   - 查看和管理项目任务
+   - 监控项目进度
+   - 管理团队成员
+
+4. **知识库管理**
+   - 手动添加重要文档和资料
+   - 搜索历史知识
+   - 查看知识库统计
+
+### 高级功能
+
+#### 智能工作流程
+CreatPartner支持预定义的工作流程，一键执行复杂任务：
+
+- **研究工作流程**: 制定研究计划 → 搜索资料 → 整理知识库
+- **分析工作流程**: 检索相关知识 → 综合分析 → 生成报告  
+- **规划工作流程**: 制定详细计划 → 风险评估 → 资源分析
+
+#### Agent协作示例
+```
+用户: "帮我调研AI在教育领域的应用现状"
+
+主Agent: 分析请求 → 制定执行计划
+├── 搜索Agent: 网络搜索最新教育AI产品和趋势
+├── 搜索Agent: ArXiv搜索相关学术论文
+└── 知识Agent: 整理资料到知识库
+
+主Agent: 综合分析 → 生成调研报告
 ```
 
-### 主代理使用
+## ⚙️ 配置说明
 
-```python
-from main_agent import create_creatpartner_agent
+### LLM提供商配置
 
-# 创建主代理
-agent = create_creatpartner_agent()
-
-# 开始研究会话
-result = agent.start_research_session_sync(
-    project_name="智能学习助手",
-    project_description="基于AI的个性化教育平台"
-)
-print(result)
+#### 硅基流动 (推荐)
+```bash
+LLM_PROVIDER=siliconflow
+SILICONFLOW_API_KEY=your_key
+LLM_MODEL=Qwen/Qwen3-30B-A3B-Instruct-2507
 ```
 
-## 🏗️ 项目结构
-
-```
-CreatPartner/
-├── search_agent.py         # 搜索代理实现
-├── knowledge_agent.py      # 知识库代理实现
-├── main_agent.py          # 主代理系统
-├── main.py               # 演示程序
-├── install.py            # 自动安装脚本
-├── pyproject.toml        # 项目配置
-├── .env.example          # 环境变量模板
-├── .env.sample           # 示例配置
-└── README.md            # 项目说明
+#### OpenAI
+```bash
+LLM_PROVIDER=openai
+OPENAI_API_KEY=your_key
+LLM_MODEL=gpt-4-turbo-preview
 ```
 
-## 🔧 配置说明
+#### DeepSeek
+```bash
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=your_key
+LLM_MODEL=deepseek-chat
+```
 
-### 环境变量详解
+### 数据库配置
 
-| 变量名 | 说明 | 必需 | 默认值 |
-|--------|------|------|--------|
-| `OPENAI_API_KEY` | OpenAI API密钥 | 是 | - |
-| `MONGODB_URI` | MongoDB连接字符串 | 是 | `mongodb://localhost:27017` |
-| `JINA_API_KEY` | Jina搜索API密钥 | 否 | - |
-| `DEFAULT_MODEL` | 默认AI模型 | 否 | `openai:gpt-4o` |
-| `DB_NAME` | 数据库名称 | 否 | `creatpartner` |
-| `MAX_SEARCH_RESULTS` | 最大搜索结果数 | 否 | `5` |
-| `EMBEDDING_MODEL` | 嵌入模型 | 否 | `sentence-transformers/all-MiniLM-L6-v2` |
+#### MongoDB本地部署
+```bash
+MONGODB_URI=mongodb://localhost:27017
+DB_NAME=creatpartner
+```
 
-### MongoDB设置
+#### MongoDB Atlas云服务
+```bash
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
+DB_NAME=creatpartner
+```
 
-1. **本地MongoDB**:
-   ```bash
-   # 启动MongoDB服务
-   mongod --dbpath /path/to/data
-   ```
-
-2. **MongoDB Atlas**:
-   - 创建Atlas集群
-   - 获取连接字符串
-   - 配置网络访问
+### 向量搜索配置
+```bash
+JINA_API_KEY=your_jina_key
+JINA_EMBEDDING_MODEL=jina-embeddings-v3
+JINA_RERANKER_MODEL=jina-reranker-v2-base-multilingual
+VECTOR_SIMILARITY_THRESHOLD=0.7
+```
 
 ## 🧪 开发指南
 
-### 扩展搜索工具
+### 项目结构
+```
+CreatPartner/
+├── app.py              # Streamlit主应用
+├── config.py           # 配置管理
+├── main_agent.py       # 主Agent逻辑
+├── search_agent.py     # 搜索Agent
+├── knowledge_agent.py  # 知识管理Agent
+├── bp_reviewer_agent.py # 计划书审查Agent  
+├── logger.py           # 日志系统
+├── pyproject.toml      # 项目配置
+├── uv.lock            # 依赖锁定文件
+├── .env.example       # 环境配置模板
+└── __pycache__/       # Python缓存文件
+```
 
+### 开发环境设置
+```bash
+# 安装开发依赖
+uv sync --group dev
+
+# 代码格式化
+uv run black .
+uv run isort .
+
+# 类型检查
+uv run mypy .
+
+# 运行测试
+uv run pytest
+```
+
+### 自定义Agent
+
+1. **创建新Agent**
+```python
+from pydantic_ai import Agent
+from config import config
+
+my_agent = Agent(
+    model=config.llm.model,
+    system_prompt="你的自定义系统提示",
+)
+
+@my_agent.tool
+async def my_custom_tool(query: str) -> str:
+    """自定义工具功能"""
+    # 实现你的逻辑
+    return result
+```
+
+2. **集成到主系统**
+```python
+# 在main_agent.py中添加你的Agent
+from your_agent import my_agent
+
+class MainAgent:
+    def __init__(self):
+        self.my_agent = my_agent
+```
+
+### 扩展搜索能力
+
+1. **添加新的搜索源**
 ```python
 @search_agent.tool
-async def custom_search(ctx: RunContext, query: str):
-    # 实现自定义搜索逻辑
-    pass
+async def custom_search(query: str) -> list:
+    """自定义搜索源"""
+    # 实现搜索逻辑
+    return search_results
 ```
 
-### 添加知识处理器
-
+2. **自定义文档解析**
 ```python
-@knowledge_agent.tool  
-async def process_custom_data(ctx: RunContext, data: Dict):
-    # 实现自定义数据处理逻辑
-    pass
+# 使用MinerU解析文档
+from mineru import DocumentParser
+
+parser = DocumentParser()
+content = parser.parse(file_path)
 ```
 
-### 自定义主代理行为
+## 📊 监控与日志
 
-```python
-# 修改system_prompt来调整AI行为
-agent = Agent(
-    model_name,
-    system_prompt="你的自定义提示..."
-)
+### 性能监控
+CreatPartner集成了Logfire监控系统：
+
+```bash
+# 启用监控
+LOGFIRE_ENABLED=true
+LOGFIRE_SEND=true
+
+# 配置监控级别
+LOG_LEVEL=INFO
+ENABLE_PERFORMANCE_METRICS=true
 ```
 
-## 🔍 功能特性
+### 日志系统
+- **实时日志**: 在Web界面查看系统运行状态
+- **结构化日志**: JSON格式记录所有操作
+- **性能指标**: 监控响应时间和资源使用
 
-### 智能搜索
-- 多源信息整合
-- 语义相似度匹配
-- 实时结果分析
-- 自动去重和排序
+## 🚨 故障排除
 
-### 知识管理
-- 向量化存储
-- 语义检索
-- 自动分类标记
-- 版本控制
+### 常见问题
 
-### 项目分析
-- 技术可行性评估
-- 市场竞争分析
-- 创新点识别
-- 风险评估
+#### 1. MongoDB连接失败
+```bash
+# 检查MongoDB是否运行
+mongosh --eval "db.runCommand({ping: 1})"
 
-### 协作支持
-- 多用户会话
-- 知识共享
-- 进度跟踪
-- 决策记录
+# 检查端口是否被占用
+netstat -an | grep 27017
+```
 
-## 📊 使用场景
+#### 2. API密钥无效
+```bash
+# 检查环境变量
+echo $SILICONFLOW_API_KEY
 
-### 创新创业竞赛
-- 项目立项调研
-- 技术方案设计
-- 市场分析报告
-- 商业计划书
+# 测试API连接
+curl -H "Authorization: Bearer $SILICONFLOW_API_KEY" \
+     https://api.siliconflow.cn/v1/models
+```
 
-### 学术研究
-- 文献调研
-- 研究方向探索
-- 论文写作支持
-- 实验设计
+#### 3. 内存不足
+```bash
+# 检查系统资源
+free -h
+top
 
-### 产品开发
-- 需求分析
-- 技术选型
-- 竞品分析
-- 用户研究
+# 优化配置
+LLM_MAX_TOKENS=4000
+MAX_CONCURRENT_REQUESTS=2
+```
 
-## ⚠️ 注意事项
+#### 4. Streamlit启动失败
+```bash
+# 检查端口占用
+lsof -i :8501
 
-1. **API密钥安全**: 不要将API密钥提交到版本控制系统
-2. **数据库备份**: 定期备份重要的项目知识库
-3. **网络访问**: 确保能访问OpenAI、Jina等API服务
-4. **资源限制**: 注意各API的调用频率和费用限制
-5. **数据隐私**: 敏感项目信息建议使用本地部署
+# 更换端口
+uv run streamlit run app.py --server.port 8502
+```
+
+### 调试模式
+启用调试模式获取详细错误信息：
+```bash
+DEBUG=true
+LOG_LEVEL=DEBUG
+STREAMLIT_SERVER_HEADLESS=false
+```
 
 ## 🤝 贡献指南
 
-欢迎提交Issues和Pull Requests来改进这个项目！
+### 参与贡献
 
-### 开发流程
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 创建Pull Request
+1. **Fork项目**
+2. **创建特性分支**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **提交更改**
+   ```bash
+   git commit -m 'Add some amazing feature'
+   ```
+4. **推送到分支**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+5. **提交Pull Request**
 
 ### 代码规范
-- 遵循PEP 8
-- 添加类型注解
-- 编写测试用例
-- 更新文档
+- 使用Black进行代码格式化
+- 遵循PEP 8编码标准
+- 添加必要的类型注解
+- 编写清晰的文档字符串
+
+### 提交信息格式
+```
+type(scope): description
+
+body (optional)
+
+footer (optional)
+```
+
+类型说明：
+- `feat`: 新功能
+- `fix`: 修复bug
+- `docs`: 文档更新
+- `style`: 代码格式
+- `refactor`: 重构
+- `test`: 测试相关
+- `chore`: 构建/工具更新
 
 ## 📄 许可证
 
-本项目基于MIT许可证开源。
+本项目采用 [MIT License](LICENSE) 开源许可证。
 
 ## 🙏 致谢
 
 - [Pydantic AI](https://ai.pydantic.org.cn/) - 强大的AI Agent框架
-- [MongoDB](https://www.mongodb.com/) - 优秀的向量数据库
-- [Jina](https://jina.ai/) - 先进的搜索技术
-- [Sentence Transformers](https://www.sbert.net/) - 文本嵌入模型
+- [Streamlit](https://streamlit.io/) - 快速构建Web应用
+- [MongoDB](https://www.mongodb.com/) - 灵活的文档数据库
+- [Jina AI](https://jina.ai/) - 先进的向量搜索技术
+- [MinerU](https://github.com/opendatalab/MinerU) - 优秀的文档解析工具
+
+## 📞 联系我们
+
+- **GitHub**: [nkanf-dev/CreatPartner](https://github.com/nkanf-dev/CreatPartner)
+- **Issues**: [报告问题](https://github.com/nkanf-dev/CreatPartner/issues)
+- **Discussions**: [参与讨论](https://github.com/nkanf-dev/CreatPartner/discussions)
+- **Email**: team@creatpartner.ai
 
 ---
 
-**CreatPartner** - 让AI助力你的创新创业之路！ 🚀
+<div align="center">
+
+**🚀 让AI助力你的创新创业之路！**
+
+Made with ❤️ by CreatPartner Team
+
+</div>

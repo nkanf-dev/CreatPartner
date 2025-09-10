@@ -1,18 +1,206 @@
 [project]
 name = "creatpartner"
-version = "0.1.0"
+version = "1.0.0"
 description = "AI-powered research assistant for creative competition projects"
 readme = "README.md"
-requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "CreatPartner Team", email = "team@creatpartner.ai" }
+]
+maintainers = [
+    { name = "CreatPartner Team", email = "team@creatpartner.ai" }
+]
+keywords = [
+    "ai", "research", "assistant", "innovation", "competition", 
+    "pydantic-ai", "mongodb", "jina-ai", "streamlit"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Education",
+]
+requires-python = ">=3.10"
 dependencies = [
-    "pydantic-ai",
-    "httpx",
-    "jina",
-    "arxiv",
-    "streamlit",
-    "python-dotenv",
-    "pymongo",
-    "sentence-transformers",
-    "motor",  # 异步MongoDB驱动
-    "numpy"
+    # Core AI framework
+    "pydantic-ai>=0.0.1",
+    
+    # HTTP client
+    "httpx>=0.25.0",
+    
+    # Search and AI services
+    "jina>=3.0.0",
+    "arxiv>=1.4.0",
+    
+    # Web framework
+    "streamlit>=1.28.0",
+    
+    # Database
+    "pymongo>=4.5.0",
+    "motor>=3.3.0",  # 异步MongoDB驱动
+    
+    # Text processing
+    "sentence-transformers>=2.2.0",
+    
+    # Environment and config
+    "python-dotenv>=1.0.0",
+    
+    # Math and data processing
+    "numpy>=1.24.0",
+    
+    # Monitoring (optional)
+    "logfire>=0.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.11.0",
+    
+    # Code quality
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    
+    # Documentation
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    
+    # Development tools
+    "pre-commit>=3.0.0",
+]
+
+all = [
+    "creatpartner[dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/nkanf-dev/CreatPartner"
+Documentation = "https://github.com/nkanf-dev/CreatPartner#readme"
+Repository = "https://github.com/nkanf-dev/CreatPartner"
+Issues = "https://github.com/nkanf-dev/CreatPartner/issues"
+Changelog = "https://github.com/nkanf-dev/CreatPartner/releases"
+
+[project.scripts]
+creatpartner = "main:main"
+creatpartner-web = "app:main"
+creatpartner-install = "install:main"
+
+[build-system]
+requires = ["hatchling>=1.18.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+exclude = [
+    "/.env*",
+    "/tests",
+    "/.git",
+    "/__pycache__",
+    "*.pyc",
+    "/.pytest_cache",
+    "/docs",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["creatpartner"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "streamlit.*",
+    "pymongo.*",
+    "motor.*",
+    "arxiv.*",
+    "sentence_transformers.*",
+    "logfire.*",
+    "pydantic_ai.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = [
+    "tests",
+    "test_*.py",
+]
+python_files = [
+    "test_*.py",
+    "*_test.py",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+    "test_*.py",
+    ".venv/*",
+    "venv/*",
+    "__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.12",
 ]
